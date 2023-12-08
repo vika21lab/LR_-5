@@ -1,0 +1,216 @@
+from tkinter import *
+from tkinter import ttk, messagebox
+from clsUniversity import University
+
+global selected_tuple
+
+
+# логика
+# заполняем поля ввода значениями выделенной позиции в общем списке
+def get_selected_row(event):
+
+
+# будем обращаться к глобальной переменной
+global selected_tuple
+# получаем позицию выделенной записи в списке
+index = list1.curselection()[0]  # this is the id of the selected tuple
+# получаем значение выделенной записи
+selected_tuple = list1.get(index)
+# удаляем то, что было раньше в поле ввода
+name_of_the_teacher_entry.delete(0, END)
+# и добавляем туда текущее значение названия покупки
+name_of_the_teacher_entry.insert(END, selected_tuple[1])
+# делаем то же самое с другими полями
+name_of_the_item_entry.delete(0, END)
+name_of_the_item_entry.insert(END, selected_tuple[2])
+number_of_hours_entry.delete(0, END)
+number_of_hours_entry.insert(END, selected_tuple[3])
+type_of_final_certification_entry.delete(0, END)
+type_of_final_certification_entry.insert(END, selected_tuple[4])
+audience_number_entry.delete(0, END)
+audience_number_entry.insert(END, selected_tuple[5])
+date_of_entry.delete(0, END)
+date_of_entry.insert(END, selected_tuple[6])
+lessons_entry.delete(0, END)
+lessons_entry.insert(END, selected_tuple[7])
+group_entry.delete(0, END)
+group_entry.insert(END, selected_tuple[8])
+
+
+# обработчик нажатия на кнопку «Посмотреть всё»
+def view_command():
+
+
+# очищаем список в приложении
+list1.delete(0, END)
+# проходим все записи в БД
+for row in database_University.view():
+# и сразу добавляем их на экран
+list1.insert(END, row)
+
+
+# обработчик нажатия на кнопку «Поиск»
+def search_command():
+
+
+# очищаем список в приложении
+list1.delete(0, END)
+# находим все записи по названию покупки
+for row in database_University.search(name_of_the_teacher_text.get()):
+# и добавляем их в список в приложение
+list1.insert(END, row)
+
+
+# обработчик нажатия на кнопку «Добавить»
+def add_command():
+
+
+# добавляем запись в БД
+database_University.insert(name_of_the_teacher_text.get(),
+                         name_of_the_item_text.get(),
+                         number_of_hours_text.get(),
+                         type_of_final_certification_text.get(),
+                         audience_number_text.get(),
+                         date_of_text.get(),
+                         lessons_text.get(),
+                         group_text.get())
+# обновляем общий список в приложении
+view_command()
+
+
+# обработчик нажатия на кнопку «Удалить»
+def delete_command():
+
+
+# удаляем запись из базы данных по индексу выделенного элемента
+database_University.delete(selected_tuple[0])
+# обновляем общий список расходов в приложении
+view_command()
+
+
+# обработчик нажатия на кнопку «Обновить»
+def update_command():
+
+
+# обновляем данные в БД о выделенной записи
+database_University.update(selected_tuple[0],
+                         name_of_the_teacher_text.get(),
+                         name_of_the_item_text.get(),
+                         number_of_hours_text.get(),
+                         type_of_final_certification_text.get(),
+                         audience_number_text.get(),
+                         date_of_text.get(),
+                         lessons_text.get(),
+                         group_text.get())
+# обновляем общий список расходов в приложении
+view_command()
+# интерфейс
+window = Tk()
+window.title("Демонстрация действий с БД")
+
+
+# обрабатываем закрытие окна
+def on_closing():
+
+
+# показываем диалоговое окно с кнопкой
+if messagebox.askokcancel("", "Закрыть программу?"):
+# удаляем окно и освобождаем память
+window.destroy()
+# сообщаем системе о том, что делать, когда окно закрывается
+window.protocol("WM_DELETE_WINDOW", on_closing)
+# создаём блоки для полей ввода и подписей к ним и размещаем их по сетке
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+# создаём надписи для полей ввода и размещаем их по сетке
+l1 = Label(frame, text="ФИО преподавателя")
+l1.pack()
+lastname_s_text = StringVar()
+lastname_s_entry = ttk.Entry(frame, textvariable=name_of_the_teacher_text)
+lastname_s_entry.pack()
+frame.grid(row=0, column=0)
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+l2 = Label(frame, text="название предмета")
+l2.pack()
+name_of_the_item_text = StringVar()
+name_of_the_item_entry = ttk.Entry(frame, textvariable=name_of_the_item_text)
+name_of_the_item_entry.pack()
+frame.grid(row=0, column=1)
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+l3 = Label(frame, text="количество часов")
+l3.pack()
+scholarship_text = StringVar()
+scholarship_entry = ttk.Entry(frame, textvariable=number_of_hours_text)
+scholarship_entry.pack()
+frame.grid(row=0, column=2)
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+l4 = Label(frame, text="номер аудитории")
+l4.pack()
+type_of_final_certification_text = StringVar()
+type_of_final_certification_entry = ttk.Entry(frame, textvariable=type_of_final_certification_text)
+type_of_final_certification_entry.pack()
+frame.grid(row=0, column=3)
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+l5 = Label(frame, text="номер аудитории")
+l5.pack()
+audience_number_text = StringVar()
+audience_number_entry = ttk.Entry(frame, textvariable=audience_number_text)
+audience_number_entry.pack()
+frame.grid(row=1, column=0)
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+# создаём список, где появятся данные, и сразу определяем его размеры в окне
+list1 = Listbox(frame, height=25, width=65)
+list1.pack(side=LEFT, fill=BOTH, expand=1)
+l6 = Label(frame, text="дата")
+l6.pack()
+date_of_text = StringVar()
+date_of_entry = ttk.Entry(frame, textvariable=date_of_text)
+date_of_entry.pack()
+frame.grid(row=1, column=1)
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+l7 = Label(frame, text="пара")
+l7.pack()
+lessons_text = StringVar()
+lessons_entry = ttk.Entry(frame, textvariable=lessons_text)
+lessons_entry.pack()
+frame.grid(row=1, column=2)
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+l8 = Label(frame, text="группа")
+l8.pack()
+group_text = StringVar()
+group_entry = ttk.Entry(frame, textvariable=group_text)
+group_entry.pack()
+frame.grid(row=1, column=3)
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+# создаём список, где появятся данные, и сразу определяем его размеры в окне
+list1 = Listbox(frame, height=25, width=65)
+list1.pack(side=LEFT, fill=BOTH, expand=1)
+# на всякий случай добавим сбоку скролл, чтобы можно было быстро прокручивать
+длинные
+списки
+sb1 = Scrollbar(frame)
+sb1.pack(side=RIGHT, fill=Y)
+# привязываем скролл к списку
+list1.configure(yscrollcommand=sb1.set)
+sb1.configure(command=list1.yview)
+frame.grid(row=1, column=0, columnspan=2)
+list1.bind('<<ListboxSelect>>', get_selected_row)
+# создаём кнопки действий и привязываем их к своим функциям
+# кнопки размещаем тоже по сетке
+frame = ttk.Frame(borderwidth=1, relief=SOLID, padding=4)
+b1 = Button(frame, text="Посмотреть все", width=12, command=view_command)
+b1.pack()  # size of the button
+b2 = Button(frame, text="Поиск", width=12, command=search_command)
+b2.pack()
+b3 = Button(frame, text="Добавить", width=12, command=add_command)
+b3.pack()
+b4 = Button(frame, text="Обновить", width=12, command=update_command)
+b4.pack()
+b5 = Button(frame, text="Удалить", width=12, command=delete_command)
+b5.pack()
+b6 = Button(frame, text="Закрыть", width=12, command=on_closing)
+b6.pack()
+b7 = Button(frame, text="Закрыть", width=12, command=on_closing)
+b7.pack()
+frame.grid(row=1, column=4)
+database_University = University_s()
+window.mainloop()
